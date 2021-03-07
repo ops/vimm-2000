@@ -1,0 +1,838 @@
+;	*** Here starts the music data ***
+
+;	First some macros one might want to define individually for each
+;	song. The noise channel can use pre-defined bd, sd, hh drums.
+
+        mac dur                         ;set tone duration (1-128)
+        .byte dur_code+({1}*6)-1
+        endm
+
+;	VIC's scale isn't too well tempered, and together with the fixed
+;	note table in ACplay (might be improved), we better transpose
+;	this song downwards (and transpose block only works upwards :-)
+
+;	Lowest tone used: d-1 => maximum down transpose is -2
+
+        mac c		
+        .byte 0+({1}-1)*12
+        endm
+        mac c#
+        .byte 1+({1}-1)*12
+        endm
+        mac d
+        .byte 2+({1}-1)*12
+        endm
+        mac d#
+        .byte 3+({1}-1)*12
+        endm
+        mac e
+        .byte 4+({1}-1)*12
+        endm
+        mac f
+        .byte 5+({1}-1)*12
+        endm
+        mac f#
+        .byte 6+({1}-1)*12
+        endm
+        mac g
+        .byte 7+({1}-1)*12
+        endm
+        mac g#
+        .byte 8+({1}-1)*12
+        endm
+        mac a
+        .byte 9+({1}-1)*12
+        endm
+        mac a#
+        .byte 10+({1}-1)*12
+        endm
+        mac h
+        .byte 11+({1}-1)*12
+        endm
+        
+instruments:	.byte	1	; number of instruments (dummy)
+
+;	vib = $xy, x=ABCD, y=EFGH in %ABCDEFGH
+;		ABC= not used, D=slide on/off
+;		EF = vib depth (00=none, 01= +-1 steps, 10= +-0.5 steps)
+;		GH = vib speed (00=fast, 01=medium, 10=slow, 11=slowest)
+;
+;	arp = $xy, x=first ch.note, y=second ch.note
+;	prt = $xx, number of "cycles" of silence between notes
+;	trp = $xx, transpose in halftones, added to block transpose
+
+;	       vib arp prt trp
+instr1:	.byte $00,$00,$02,$00  ; regular portamento instrument
+	.byte $10,$00,$00,$00	; slide
+	.byte %00001001,$00,$00,$00	; melody vibrato
+	.byte $00,$00,$06,$00	; spaced notes (bass)
+
+; Max 64 entries per track!
+
+tracks:         .word   ch_0_track
+                .word   ch_1_track
+                .word   ch_2_track
+                .word   ch_3_track
+
+blocks:	        .word   block_0		; quiet  block
+		.word	block_1
+		.word	block_2
+		.word	block_3
+		.word	block_4
+		.word	block_5
+		.word	block_6
+		.word	block_7
+		.word	block_8
+		.word	block_9
+		.word	block_10
+		.word	block_11
+		.word	block_12
+		.word	block_13
+		.word	block_14
+		.word	block_15
+		.word	block_16
+		.word	block_17
+
+;	Entries marked with "omit?" could be .. omitted if preferred.
+;	The composer thinks the tune works equally well without them.
+
+ch_0_track                              ;bass c#1-e4
+	block	1
+	rept	3
+	block	2
+	block	3
+	rept	6
+	block	4
+	rept	3			; omit?
+	block	2			; omit?
+	block	3			; omit?
+	block	5			; omit?
+	jump	1			; omit = jump 4
+        
+ch_1_track                              ;mid c#2-e5
+	block	6
+	block	7
+	block	0
+	rept	15			; omit = decrease to 12
+	block	6
+	block	8			; omit?
+	jump	2			; omit = jump 3
+
+ch_2_track                              ;treble c#3-e6
+	block	6
+	block	9
+	block	0
+	block	10
+	block	11
+	block	11
+	block	12
+	block	12
+	block	13			; omit?
+	jump	2			; omit = jump 3
+
+ch_3_track                              ;noise c#4-e7
+	block	0
+	rept	3
+	block	14
+	block	15
+	rept	24
+	block	14
+	block	16			; omit?
+	rept	3			; omit?
+	block	17			; omit?
+	block	16			; omit?
+	block	17			; omit?
+	block	17			; omit?
+	jump	1			; omit = jump 4
+
+block_0			; 36875 - 3, 36876 - 3, 36877 - 1
+	instr 1
+	dur 16
+	quiet
+	quiet
+	quiet
+	quiet
+	blockend
+
+block_1			; 36874 - 1
+	instr 3		; vibratot hörs inte så mycket ändå..
+	dur 16
+	e 2
+	d 2
+	c# 2
+	dur 12
+	c 2
+	dur 4
+	d 2
+	blockend
+
+block_2			; 36874 - 3/abc,6/abc
+	instr 4
+	dur 3
+	e 1
+	e 2
+	e 1
+	instr 1
+	dur 2
+	e 2
+	dur 1
+	e 1  
+	dur 2
+	e 2
+	dur 1
+	e 1  
+	quiet
+	blockend
+
+block_3			; 36874 - 3/d,6/d 
+	instr 4
+	dur 3
+	e 1
+	e 2
+	e 1
+	e 2
+	instr 1
+	dur 2
+	e 1
+	dur 1
+	d 1  
+	quiet 
+	blockend
+
+block_4			; 36874 - 2,7,4,5
+	instr 4
+	dur 3
+	e 1  
+	e 2  
+	e 1  
+	instr 1
+	dur 2
+	e 2    
+	dur 1
+	e 1  
+	dur 2
+	e 2    
+	f# 1    
+	instr 4
+	dur 3
+	g 1   	 
+	g 2   	 
+	g 1   	 
+	instr 1
+	dur 2
+	g 2    
+	dur 1
+	g 1  
+	dur 2
+	g 2    
+	g# 1    
+	instr 4
+	dur 3
+	a 1   	 
+	a 2   	 
+	a 1   	 
+	instr 1
+	dur 2
+	a 2    
+	dur 1
+	a 1  
+	dur 2
+	a 2    
+	a# 1    
+	instr 4
+	dur 3
+	h 1   	 
+	h 2   	 
+	instr 1
+	dur 2
+	h 1    
+	instr 2
+	dur 4
+	h 2     
+	instr 1
+	d 1        
+	blockend
+
+block_5			; 36874 - 0
+	instr 1
+	dur 4
+	e 1 
+	g 1  
+	f# 1 
+	f 1  
+	e 1  
+	d 2  
+	c 2  
+	a 1  
+	g 1  
+	a 1  
+	h 1  
+	e 1  
+	blockend
+
+block_6			; 36875 - 1/a, 2/ab, 7/ab, 4/ab, 5/ab, 6/ab, 0/a
+	instr 1		; 36876 - 1/a
+	dur 1
+	e 3
+	quiet 
+	e 3  
+	quiet 
+	e 3  
+	quiet 
+	dur 2
+	e 3    
+	quiet   
+	dur 1
+	e 3  
+	quiet 
+	e 3  
+	dur 3
+	quiet     
+	instr 4
+	e 3    
+	e 3    
+	instr 1
+	dur 2
+	quiet   
+	e 3    
+	dur 1
+	quiet
+	dur 2 
+	e 3    
+	dur 3
+	quiet     
+	blockend
+
+block_7			; 36875 - 1/b
+	instr 4
+	dur 3
+	e 3    	 
+	e 3    	 
+	e 3    	 
+	e 3    	 
+	e 3    	  
+	dur 1
+	quiet
+	dur 3
+	e 3    	 
+	e 3    	 
+	e 3    	 
+	e 3    	 
+	e 3    	 
+	dur 1
+	quiet
+	blockend
+
+block_8			; 36875 - 0/b
+	instr 1
+	dur 1
+	e 3  
+	quiet 
+	e 3  
+	quiet 
+	e 3  
+	quiet
+	dur 2 
+	e 3    
+	quiet  
+	dur 1 
+	e 3  
+	quiet 
+	e 3  
+	dur 3
+	quiet   
+	blockend
+
+block_9			; 36876 - 1/b
+	instr 1
+	dur 1
+	e 3  
+	quiet 
+	e 3  
+	quiet 
+	e 3  
+	quiet
+	dur 2 
+	e 3    
+	quiet  
+	dur 1 
+	e 3  
+	quiet
+	dur 2 
+	e 3    
+	quiet   
+	dur 1
+	e 3  
+	quiet 
+	e 3  
+	quiet 
+	e 3  
+	quiet
+	dur 2 
+	e 3    
+	quiet   
+	dur 1
+	e 3  
+	quiet
+	dur 2 
+	e 3    
+	quiet  
+	blockend 
+
+block_10		; 36876 - 2+7
+	instr 1
+	dur 1
+	e 2 
+	quiet 
+	e 2  
+	f# 2  
+	g 2  
+	f# 2  
+	e 2  
+	dur 3
+	h 2      
+	dur 1
+	e 2  
+	f# 2  
+	g 2  
+	f# 2 
+	dur 2 
+	e 2    
+	instr 3
+	dur 3
+	a 2     
+	instr 1
+	dur 2
+	g 2    
+	dur 1
+	f# 2 
+	dur 3 
+	e 2      
+	dur 1
+	quiet 
+	e 2  
+	f# 2  
+	g 2  
+	f# 2  
+	dur 2
+	e 2    
+	instr 3
+	dur 3
+	a 2     
+	instr 1
+	dur 2
+	g 2    
+	dur 1
+	f# 2 
+	dur 3 
+	e 2      
+	dur 1
+	quiet 
+	e 2  
+	f# 2  
+	g 2  
+	f# 2 
+	dur 2 
+	e 2    
+	dur 1
+	a# 2  
+	h 2  
+	a# 2  
+	h 2  
+	instr 3
+	dur 2
+	d 3    
+	h 2    
+	a 2    
+	instr 1
+	g 2    
+	e 2    
+	d 2    
+	dur 1
+	e 2
+	quiet 
+	e 2  
+	f# 2  
+	g 2  
+	f# 2  
+	e 2  
+	dur 3
+	h 2      
+	dur 1
+	e 2  
+	f# 2  
+	g 2  
+	f# 2 
+	dur 2 
+	e 2    
+	dur 3
+	a 2      
+	dur 2
+	h 2    
+	dur 1
+	d 3  
+	instr 3
+	dur 3
+	e 3  	   
+	instr 1
+	dur 1
+	quiet
+	dur 2 
+	g 3    
+	e 3    
+	g 3    
+	dur 1
+	a 3  
+	g 3  
+	dur 2
+	e 3    
+	a 3    
+	instr 3
+	dur 4
+	g 3  	     
+	instr 1
+	dur 2
+	a 3    
+	g 3    
+	e 3    
+	dur 1
+	g 3  
+	e 3  
+	g 3  
+	a 3  
+	g 3  
+	e 3  
+	d 3  
+	e 3  
+	d 3  
+	h 2  
+	a 2  
+	g 2  
+	f# 2  
+	e 2  
+	f# 2  
+	d 2  
+	blockend
+
+block_11		; 36876 - 4
+	instr 1
+	dur 4
+	quiet       
+	dur 1
+	e 3  
+	quiet 
+	d 3  
+	e 3  
+	quiet 
+	d 3  
+	e 3  
+	d 3  
+	dur 2
+	h 2    
+	instr 3
+	dur 5
+	d 3         
+	instr 1
+	dur 1
+	quiet 
+	h 2  
+	a 2  
+	h 2  
+	a 2  
+	h 2  
+	a 2  
+	h 2  
+	a 2  
+	dur 2
+	g 2    
+	dur 1
+	e 2  
+	quiet 
+	g 2  
+	quiet 
+	e 2  
+	a 2  
+	quiet 
+	e 2  
+	h 2  
+	quiet 
+	e 2  
+	d 3  
+	quiet 
+	e 2  
+	e 3  
+	e 2  
+	d 3  
+	h 2  
+	d 3  
+	h 2  
+	d 3  
+	h 2  
+	dur 2
+	a 2    
+	instr 3
+	h 2    
+	instr 1
+	dur 1
+	a 2  
+	h 2  
+	a 2  
+	g 2  
+	instr 3
+	dur 2
+	f# 2    
+	instr 1
+	d 2    
+	blockend
+
+block_12		; 36876 - 5
+	instr 1		; egentligen inget portamento före slide
+	dur 2
+	e 2  
+	instr 2
+	dur 4
+	e 2 
+	instr 3
+	h 2       
+	instr 1
+	dur 2
+	e 3    
+	instr 3
+	d 3   
+	h 2   
+	instr 1		; egentligen inget portamento före slide
+	e 2    
+	instr 2
+	dur 4
+	e 2
+	instr 3
+	dur 10
+	h 2                   
+	instr 1		; egentligen inget portamento före slide
+	dur 2
+	e 2    
+	instr 2
+	dur 4
+	e 2
+	instr 3
+	h 2       
+	instr 1
+	dur 2
+	e 3   
+	instr 3 
+	d 3   
+	h 2   
+	instr 1
+	dur 1
+	a 2  
+	h 2  
+	a 2  
+	g 2  
+	dur 2
+	f# 2    
+	d 2    
+	f# 2    
+	g 2    
+	dur 1
+	f# 2  
+	e 2  
+	dur 2
+	d 2    
+	blockend
+
+block_13		; 36876 - 6+0
+	instr 1
+	dur 1
+	e 2 
+	quiet 
+	f# 2  
+	quiet 
+	g 2  
+	quiet 
+	e 2  
+	quiet 
+	f# 2  
+	quiet 
+	g 2  
+	quiet 
+	a 2  
+	quiet 
+	f# 2  
+	quiet 
+	g 2  
+	quiet 
+	a 2  
+	quiet 
+	h 2  
+	quiet 
+	g 2  
+	quiet 
+	a 2  
+	quiet 
+	h 2  
+	quiet 
+	c 3  
+	quiet 
+	a 2  
+	quiet 
+	h 2  
+	quiet 
+	g 2  
+	quiet 
+	a 2  
+	quiet 
+	f# 2  
+	quiet 
+	g 2  
+	quiet 
+	e 2  
+	quiet 
+	f# 2  
+	quiet 
+	d# 2  
+	quiet 
+	e 2  
+	quiet 
+	h 1  
+	quiet 
+	c 2  
+	h 1  
+	a 1  
+	quiet 
+	dur 5
+	h 1          
+	dur 3
+	quiet     
+	dur 1
+	e 2
+	quiet
+	e 2 
+	quiet
+	h 2 
+	quiet
+	h 2 
+	quiet
+	a 2 
+	quiet
+	g 2 
+	quiet
+	dur 2
+	f# 2  
+	quiet 
+	dur 1
+	e 2 
+	quiet
+	e 2 
+	quiet
+	h 2 
+	quiet
+	h 2 
+	quiet
+	c 3 
+	quiet
+	d 3 
+	quiet
+	dur 2
+	h 2  
+	quiet 
+	dur 1
+	a 2 
+	g 2 
+	f# 2 
+	quiet
+	g 2 
+	quiet
+	e 2 
+	quiet
+	f# 2 
+	e 2 
+	d# 2 
+	quiet
+	dur 2
+	e 2  
+	quiet 
+	blockend
+
+block_14		; 36877 - 3/abc, 2/abcd, 7/abcd, 4/abcd, 5/abcd
+	instr 1
+	dur 1
+	bd  
+	quiet 
+	hh 
+	hh 
+	sd  
+	quiet 
+	hh 
+	hh 
+	hh 
+	bd 
+	hh 
+	hh 
+	sd  
+	quiet 
+	hh 
+	hh 
+	blockend
+
+block_15		; 36877 - 3/d
+	instr 1
+	dur 1
+	bd  
+	quiet 
+	hh 
+	sd  
+	quiet 
+	hh 
+	sd 
+	hh 
+	sd 
+	bd 
+	sd 
+	sd 
+	sd 
+	sd 
+	hh 
+	sd 
+	blockend
+
+block_16		 ; 36877 - 6/a, 0/a
+	instr 1
+	dur 1
+	bd  
+	quiet
+	hh 
+	hh 
+	sd  
+	quiet 
+	hh 
+	hh 
+	hh 
+	hh 
+	hh 
+	hh 
+	sd  
+	quiet 
+	hh 
+	hh 
+	blockend
+
+block_17		; 36877 - 6/bcd, 0/bc (then loops)
+	instr 1
+	dur 1
+	hh  
+	quiet
+	hh 
+	hh 
+	sd  
+	quiet 
+	hh 
+	hh 
+	hh 
+	hh 
+	hh 
+	hh 
+	sd  
+	quiet 
+	hh 
+	hh 
+	blockend

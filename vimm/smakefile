@@ -1,0 +1,9 @@
+
+all: vimm.prg
+
+vimm.prg: vimm
+	pucrunch -c20 vimm vimm.prg
+
+vimm: vimm.asm loader.asm bigfont.bin /songs/acplay.a65
+	dasm vimm.asm -ovimm -v3 -lvimm.lst
+

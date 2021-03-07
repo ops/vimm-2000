@@ -1,0 +1,15 @@
+all: tech^2.p tech^2.n
+
+tech^2.p: techtech.pal
+	pucrunch -c20 techtech.pal tech^2.p
+
+tech^2.n: techtech.ntsc
+	pucrunch -c20 techtech.ntsc tech^2.n
+
+
+techtech.pal: techtech.a brush.data dycp.data
+	dasm techtech.a -otechtech.pal -v3 -ltechtech.pal.lst -MSYSTEM=PAL
+
+techtech.ntsc: techtech.a brush.data dycp.data
+	dasm techtech.a -otechtech.ntsc -v3 -ltechtech.ntsc.lst -MSYSTEM=NTSC
+

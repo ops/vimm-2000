@@ -1,0 +1,34 @@
+
+all: vicpic.p vicpic.n vimmgfx5 vimmgfxb vimmgfx0
+
+vicpic.p: vicpic.pal
+	pucrunch -c20 vicpic.pal vicpic.p
+
+vicpic.n: vicpic.ntsc
+	pucrunch -c20 vicpic.ntsc vicpic.n
+
+vicpic.pal: vicpic.asm sa_uncrunch.asm
+	dasm vicpic.asm -ovicpic.pal -v3 -lvicpic.pal.lst -MSYSTEM=PAL
+
+vicpic.ntsc: vicpic.asm sa_uncrunch.asm
+	dasm vicpic.asm -ovicpic.ntsc -v3 -lvicpic.ntsc.lst -MSYSTEM=NTSC
+
+
+vimmgfx0: newmus0
+	pucrunch -c0 newmus0 vimmgfx0
+
+vimmgfx5: newmus
+	pucrunch -c0 newmus vimmgfx5
+
+vimmgfxb: newmus2
+	pucrunch -c0 newmus2 vimmgfxb
+
+newmus0: newmus0.asm
+	dasm newmus0.asm -onewmus0 -v3 -lnewmus0.lst
+
+newmus: newmus.asm
+	dasm newmus.asm -onewmus -v3 -lnewmus.lst
+
+newmus2: newmus2.asm
+	dasm newmus2.asm -onewmus2 -v3 -lnewmus2.lst
+

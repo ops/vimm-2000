@@ -1,0 +1,17 @@
+
+all: crediz.p crediz.n
+
+crediz.n: credits.ntsc
+	pucrunch -c20 credits.ntsc crediz.n
+
+crediz.p: credits.pal
+	pucrunch -c20 credits.pal crediz.p
+
+credits.ntsc: credits.asm bigfont_hn.bin bigfont_v1.bin bigfont_v2.bin
+	dasm credits.asm -ocredits.ntsc -v3 -lcredits.ntsc.lst -MSYSTEM=NTSC
+
+credits.pal: credits.asm bigfont_h.bin bigfont_v1.bin bigfont_v2.bin
+	dasm credits.asm -ocredits.pal -v3 -lcredits.pal.lst -MSYSTEM=PAL
+
+
+

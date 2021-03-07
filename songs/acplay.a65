@@ -1,0 +1,564 @@
+
+#processor 6502
+
+;SYSTEM eqm PAL
+;SYSTEM eqm NTSC
+
+; Music player for the VIC-20, written by Anders Carlsson and bug fixed 
+; by Pasi Ojala. This routine is 50% of Asger Alstrup's routine from 
+; Veni Vidi VIC! and 50% of Adam Bergström's VICPLAY, not used in VVV but
+; was used in an early stage of the development. Added to those two is 
+; some extra features, inspired by Jonas Hultén's unpublish player and 
+; others.
+
+; This player deals with instruments, tracks and blocks. The instruments
+; define slide/vibrato, portamento, arpeggio and individual transpose.
+; See music example "axelf.sng" for more details.
+
+#seg code
+
+#include "/songs/songdef.i"
+
+	jmp player_update
+player_init
+	ldx #42
+0$	lda tone_ntsc,x
+	ldy SYSTEMSEL
+	beq ntsc$
+	lda tone_pal,x
+ntsc$	sta tone_values,x
+	dex
+	bpl 0$
+
+
+        ldx     #0
+init_loop
+        txa
+        tay                             ;Y is byte-ptr
+        asl
+        tax                             ;make X a word-ptr
+        lda     tracks,x
+        sta     track_init
+        sta     track_lo,y
+        lda     tracks+1,x
+        sta     track_init+1
+        sta     track_hi,y
+        tya
+        tax                             ;X back to byte-ptr
+        lda     $ffff
+track_init      equ     *-2
+        asl
+        tay
+        lda     blocks,y             ;block_list
+        sta     block_ptr_lo,x
+        lda     blocks+1,y           ;block_list
+        sta     block_ptr_hi,x
+	txa			; distribute changes to different frames
+	lsr
+	;lda #0
+        sta     tone_len,x
+	lda #0
+        sta     track_ptr,x
+        sta     duration,x
+        sta     block_loop,x
+        sta     block_trans,x        
+	sta	vibdepth,x
+	sta	arpeggio,x
+	sta	portamento,x
+	sta	portadefault,x
+	sta	transpose,x
+	sta vicfreq,x
+	sta vibstart,x
+	sta vibend,x
+	sta vibcnt,x
+	sta vibmode,x
+  	sta vibspeed,x
+	sta note,x
+	sta slidey,x
+  	sta slideframes,x
+	sta slideon,x
+
+        sta     $900a,x                 ;quiet the voices
+        inx
+        cpx     #4
+        bne     init_loop
+        lda     $900e
+        ora     #$07
+        sta     $900e                   ;set max volume
+        rts
+player_count
+	dc.b 0
+player_update
+	lda SYSTEMSEL
+	bne play$
+	ldx player_count
+	inx
+	cpx #6
+	bne 0$
+	ldx #0
+	stx player_count
+	rts
+0$	stx player_count
+play$	ldx     #0
+player_loop        
+        lda     block_ptr_lo,x
+        sta     block_ptr
+        lda     block_ptr_hi,x
+        sta     block_ptr+1
+        
+        lda     track_lo,x
+        sta     track
+        lda     track_hi,x
+        sta     track+1
+
+        jsr     block_update
+        
+        lda     block_ptr
+        sta     block_ptr_lo,x
+        lda     block_ptr+1
+        sta     block_ptr_hi,x
+
+        inx
+        cpx     #4
+        bne     player_loop
+
+player_update_end
+        rts
+
+block_update
+        lda     tone_len,x
+	bpl	bu$	
+	rts
+bu$:
+        beq     fetch_block_byte        ;if tone_len=0
+	cmp portamento,x
+	bcs play_something$
+	lda #silence
+	bne dec_tone_len
+play_something$:
+	lda vibdepth,x
+	and #$0f
+	beq novib$
+	jsr vibration
+novib$:
+	lda #0
+	sta arptmp
+	lda arpeggio,x
+	beq noarp$
+	ldy arpcnt,x
+	beq arp2$
+	cpy #1			; first arpeggio byte
+	beq arp1$
+	lsr			; second arpeggio byte
+	lsr
+	lsr
+	lsr
+arp1$:	and #$0f
+	clc
+	adc note,x
+	tay
+	lda tone_values,y
+	ldy note,x
+	sec
+	sbc tone_values,y
+	sta arptmp
+arp2$:	inc arpcnt,x
+	lda arpcnt,x
+	cmp #3
+	bcc noarp$
+	lda #0
+	sta arpcnt,x
+noarp$:	
+	lda slideon,x
+	beq noslide$
+  	jsr doslide
+noslide$:
+  	lda vibcnt,x
+;  	cmp #$80
+;  	ror
+;  	cmp #$80
+;  	ror
+  	clc
+  	adc vicfreq,x
+	adc arptmp
+dec_tone_len
+  	sta $900a,x		;And play note
+        dec     tone_len,x
+        rts                             ;don't fetch new data yet
+fetch_block_byte
+        clv                             ;use bvc as bra (short-jmp)
+        lda     $ffff
+block_ptr       equ     *-2
+        inc     block_ptr               ;point to next byte
+        bne     compare_byte
+        inc     block_ptr+1
+compare_byte
+	cmp	#dur_code		; duration included
+	bcs	set_duration
+	ldy	#1			; dummy for silent vibrato
+        cmp     #silence
+        beq     set_vic_reg             ; if quiet-tone
+	cmp	#blend_code		; end of block
+	beq	block_end
+        cmp     #inst_code
+        bcc     set_tone		; if an ordinary note
+
+	and	#inst_code-1		; change instrument
+	asl
+	asl
+	tay
+	lda	instr1,y
+	sta	vibdepth,x
+	lda	instr1+1,y
+	sta	arpeggio,x
+	lda	instr1+2,y
+	sta	portadefault,x
+	cmp	duration,x
+	bmi	co_b$
+	lda	#0
+co_b$:
+	sta	portamento,x
+	lda	instr1+3,y
+	sta	transpose,x
+
+	lda	#0			; turn off vibrato offset!
+	sta	vibcnt,x
+        bvc     fetch_block_byte
+
+set_tone
+        clc
+        adc     transpose,x
+	adc	block_trans,x
+	sta	note,x
+        tay
+        lda     tone_values,y
+set_vic_reg
+        sta     vicfreq,x
+	lda	slidey,x
+	sta	slideframes,x
+	lda	vibdepth,x
+	and	#$0f
+	beq	svr$
+	jsr	dovib
+svr$:	
+	lda	vibdepth,x
+	and	#$f0
+	beq	svr2$
+	jsr	initslide
+svr2$:
+        lda     duration,x
+        sta     tone_len,x
+        rts                             ;don't fetch new data yet
+check_extra
+        cmp     #$ff                    ;block_end
+        beq     block_end
+set_duration                            ;nothing more to test
+        and     #127
+	sta	duration,x
+	lda	portadefault,x
+	cmp	duration,x		; if tone length < portamento,
+	bmi	sdur$			; play tone instead of quiet
+	lda	#0
+sdur$:
+	sta	portamento,x
+        jmp     fetch_block_byte        ; bvc was out of branch
+block_end
+        lda     block_loop,x
+        beq     inc_track_ptr
+        dec     block_loop,x
+        bvc     get_track_byte
+inc_track_ptr
+        inc     track_ptr,x
+get_track_byte
+        ldy     track_ptr,x
+        lda     $ffff,y                 ;get next track-byte
+track           equ     *-2
+        cmp     #restart_code
+        beq     restart_track
+        cmp     #stop_code
+        beq     stop_track
+        cmp     #transpose_code
+        bcs     transpose_block
+        cmp     #repeat_code
+        bcs     repeat_block
+	cmp	#jump_code
+	bcs	jump_track
+        bvc     get_block_ptr           ;play-block-nr-byte
+restart_track
+        lda     #0
+        sta     track_ptr,x
+        bvc     get_track_byte
+jump_track
+	and	#jump_code-1
+	sta	track_ptr,x
+	bvc	get_track_byte	
+stop_track
+        lda     #255
+        sta     tone_len,x
+        rts                             ;don't fetch new data yet
+repeat_block
+        and     #repeat_code-1
+        sta     block_loop,x
+        bvc     inc_track_ptr
+transpose_block
+        and     #63			; transpose_code = %11000000
+        sta     block_trans,x		; so -1 => %10111111
+        bvc     inc_track_ptr
+get_block_ptr
+        asl
+        tay
+        lda     blocks,y
+        sta     block_ptr
+        lda     blocks+1,y
+        sta     block_ptr+1
+        jmp     fetch_block_byte        ;haven't done anything yet...
+;block_update_end
+
+initslide:
+	lda	#1
+	sta	slideon,x
+	lda	block_ptr		; find next real note in block
+	sta	nbptr
+	lda	block_ptr+1
+	sta	nbptr+1
+	ldy	#$ff
+nbloop$:
+	iny
+	lda	$ffff,y
+nbptr equ *-2
+	cmp	#inst_code
+	bcs	nbloop$
+        clc
+        adc     transpose,x
+	adc	block_trans,x
+	tay
+	lda	tone_values,y			; calculate slide
+	ldy	note,x
+	sec
+	sbc	tone_values,y
+	pha
+	lda	tone_values,y
+	sta	vicfreq,x
+	ldy	#1
+	pla
+	beq isl2$ 
+	bpl isl1$
+        eor #$ff
+  	clc
+  	adc #1
+  	dey
+isl2$: 	dey
+isl1$:	sta slideudx,x
+  	tya
+  	sta slidesdx,x
+	lda #0
+  	sta slidey,x
+	lda duration,x
+	sta slideframes,x
+  	lda slideudx,x
+  	clc
+  	adc slideframes,x
+  	lsr
+  	sta slidea,x
+	rts
+
+dovib:
+  ;Calculate vibend: (Next note - Note) / 2
+  lda tone_values+1,y
+  sec
+  sbc tone_values,y
+  cmp #2		; intervals smaller than 2 should not be halved
+  bcc dv$
+  tay
+  lda vibdepth,x
+  and #$0f
+  cmp #8		; %xxxxABzz, don't halve if A-bit is unset
+  tya			; tya won't change the 'C' flag
+  bcc dv$
+  lsr
+dv$:
+  sta vibend,x
+
+  ;Calculate vibstart: -vibend
+  eor #$ff	
+; sec
+  adc #0
+  sta vibstart,x
+
+  lda vibdepth,x
+  and #3
+  sta vibspeed,x	; counter
+
+  ;Start from middle
+  lda #0
+  sta vibcnt,x
+
+  ;And go up
+  lda #128
+  sta vibmode,x		;This is done in main loop
+  rts
+
+;Process vibration
+;-----------------
+
+vibration:
+  lda vibspeed,x
+  beq vib2$
+  dec vibspeed,x
+  rts
+
+vib2$:
+  lda vibdepth,x
+  and #3
+  sta vibspeed,x
+
+  ldy vibmode,x
+  beq novib$
+  bmi vibup$
+
+;vibdown$:
+  lda vibcnt,x
+  cmp vibstart,x
+  bne stilldown$
+
+;Going up:
+  inc vibmode,x		;always to 128
+
+;Fast will use "rts" here
+
+stillup$:
+  inc vibcnt,x
+novib$:
+  rts
+
+vibup$:
+  lda vibcnt,x
+  cmp vibend,x
+  bne stillup$
+
+;Going down:
+  dec vibmode,x		;always to 127
+
+;Fast will use "rts" here
+
+stilldown$:
+  dec vibcnt,x
+  rts
+
+;Process slide
+;-------------
+
+doslide:
+  lda slidey,x 
+  cmp slideframes,x
+  beq dsl3$
+
+  inc slidey,x
+  lda slidea,x
+  sec
+  sbc slideudx,x
+  sta slidea,x
+  
+  bpl dsl1$
+  clc
+  adc slideframes,x
+  sta slidea,x
+
+  lda vicfreq,x
+  clc
+  adc slidesdx,x
+  sta vicfreq,x
+
+dsl1$
+  rts
+
+;Stop sliding
+dsl3$
+
+  lda #0
+  sta slideon,x
+
+;No sliding:
+
+dsl2$
+  ldy note,x
+  lda tone_values,y
+  sta vicfreq,x
+  rts
+
+; *** PLAYER/MUSIC DATA ***
+
+; The note table might be altered for NTSC, PAL and other. The last three
+; values (128, 224, 254) defines the sounds for bass drum, snare drum and
+; closed hi-hat.
+
+tone_values	.byte 255,130,137,144,150,156,161,167,172,176,181,185
+  		.byte 189,193,196,199,202,205,208,211,213,216,218,220
+  		.byte 222,224,226,227,229,230,232,233,234,235,236,237
+		.byte 239,240,241,242,128,224,254
+
+tone_pal
+	;    C   C#  D   D#  E   F   F#  G   G#  A   A#  H
+	dc.b 255,130,137,144,150,156,161,167,172,176,181,185
+	dc.b 189,193,196,199,202,205,208,211,213,216,218,220
+	dc.b 222,224,226,227,229,230,232,233,234,235,236,237
+	dc.b 238,239,240,241
+	dc.b 128,224,254	; BassDrum, Snare, HighHat
+tone_ntsc
+#if 1
+	dc.b 255,133,140,146,152,158,163,169,173,178,182,186
+	dc.b 190,194,197,201,204,207,209,212,214,217,219,221
+	dc.b 223,224,226,228,229,231,232,233,235,236,237,238
+	dc.b 239,240,241,242
+	dc.b 128,224,254	; BassDrum, Snare, HighHat
+#else
+	dc.b 255,140,146,152,158,163,169,173,178,182,186,190
+	dc.b 194,197,201,204,207,209,212,214,217,219,221,223
+	dc.b 224,226,228,229,231,232,233,235,236,237,238,239
+	dc.b 240,241,242,243
+	dc.b 128,224,254	; BassDrum, Snare, HighHat
+#endif
+
+; Table based on VIC's individual octaves, built from top to bottom
+; which means it sounds equally bad all the way...
+; tone_values	.byte 255,135,143,147,151,159,163,171,175,179,183,187
+;  		.byte 191,195,199,201,203,207,209,213,215,217,219,221
+;  		.byte 223,225,227,228,229,231,232,234,235,236,237,238
+;		.byte 239,240,241,242,128,224,254
+
+track_lo        .byte   0,0,0,0
+track_hi        .byte   0,0,0,0
+block_ptr_lo    .byte   0,0,0,0
+block_ptr_hi    .byte   0,0,0,0
+tone_len        .byte   0,0,0,0
+track_ptr       .byte   0,0,0,0
+duration        .byte   0,0,0,0
+block_trans     .byte   0,0,0,0
+block_loop      .byte   0,0,0,0
+note		.byte	0,0,0,0
+vicfreq		.byte	0,0,0,0
+arpcnt		.byte	0,0,0,0
+arptmp		.byte	0,0
+
+vibstart	.byte	0,0,0,0
+vibend		.byte	0,0,0,0
+vibcnt		.byte	0,0,0,0
+vibmode		.byte	0,0,0,0
+vibspeed	.byte	0,0,0,0
+
+slideframes	.byte 0,0,0,0
+slideudx	.byte 0,0,0,0
+slidesdx	.byte 0,0,0,0
+slidea		.byte 0,0,0,0
+slidey		.byte 0,0,0,0
+slideon		.byte 0,0,0,0
+
+vibdepth	.byte	0,0,0,0
+arpeggio	.byte	0,0,0,0
+portamento	.byte	0,0,0,0
+portadefault	.byte	0,0,0,0
+transpose	.byte	0,0,0,0
+
+; insert song here
+
+;#include "tetris.sng"

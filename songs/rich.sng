@@ -1,0 +1,903 @@
+;	*** Here starts the music data ***
+
+;	First some macros one might want to define individually for each
+;	song. The noise channel can use pre-defined bd, sd, hh drums.
+
+        mac dur                         ;set tone duration (1-128)
+        .byte dur_code+({1}*6)-1
+        endm
+
+;	VIC's scale isn't too well tempered, and together with the fixed
+;	note table in ACplay (might be improved), we better transpose
+;	this song downwards (and transpose block only works upwards :-)
+
+        mac c		
+        .byte 0+({1}-1)*12
+        endm
+        mac c#
+        .byte 1+({1}-1)*12
+        endm
+        mac d
+        .byte 2+({1}-1)*12
+        endm
+        mac d#
+        .byte 3+({1}-1)*12
+        endm
+        mac e
+        .byte 4+({1}-1)*12
+        endm
+        mac f
+        .byte 5+({1}-1)*12
+        endm
+        mac f#
+        .byte 6+({1}-1)*12
+        endm
+        mac g
+        .byte 7+({1}-1)*12
+        endm
+        mac g#
+        .byte 8+({1}-1)*12
+        endm
+        mac a
+        .byte 9+({1}-1)*12
+        endm
+        mac a#
+        .byte 10+({1}-1)*12
+        endm
+        mac h
+        .byte 11+({1}-1)*12
+        endm
+
+; 	total range: e-1 to e-3
+        
+instruments:	.byte	1	; number of instruments
+
+;	vib = $xy, x=slideon, y=depth of vibrato, 0 = no vibrato
+;	arp = $xy, x=first ch.note, y=second ch.note
+;	prt = $xx, number of "cycles" of silence between notes
+;	trp = $xx, transpose in halftones, not implemented
+
+;	       vib arp prt trp
+instr1: .byte $00,$00,$01,$00	; default instrument
+	.byte $10,$00,$00,$00	; slide bass (on intro)
+	.byte $00,$00,$03,$00	; drum instrument
+	.byte $00,$00,$01,$00	; 4 instruments required now
+
+; Max 64 entries per track!
+
+tracks:         .word   ch_0_track
+                .word   ch_1_track
+                .word   ch_2_track
+                .word   ch_3_track
+
+blocks:	        .word   block_0		; bass intro
+		.word	block_1		; bass song
+		.word	block_2
+		.word	block_3
+		.word	block_4
+		.word	block_5
+		.word	block_6
+		.word	block_7
+		.word	block_8
+			
+ch_0_track                              ;bass c#1-e4
+	block	0
+	block	1
+	block	2
+	jump	2
+
+ch_1_track                              ;mid c#2-e5
+	block	3
+	block	1
+	block	4
+	jump 	2
+
+ch_2_track                              ;treble c#3-e6
+	block	5
+	block	6
+	jump	1
+
+ch_3_track                              ;noise c#4-e7
+	block	7
+	block	8
+	jump	1
+
+block_0
+	instr 2
+	dur 1
+	e 1
+	g 1
+	a# 1
+	c# 2
+	e 2
+	g 2
+	a# 2
+	c# 3
+	e 3
+	c# 3
+	a# 2
+	g 2
+	e 2
+	c# 2
+	a# 1
+	g 1
+	e 1
+	g 1
+	a# 1
+	c# 2
+	e 2
+	g 2
+	a# 2
+	c# 3
+	e 3
+	c# 3
+	a# 2
+	g 2
+	e 2
+	c# 2
+	a# 1
+	g 1
+	e 1
+	g 1
+	a# 1
+	c# 2
+	e 2
+	g 2
+	a# 2
+	c# 3
+	e 3
+	c# 3
+	a# 2
+	g 2
+	e 2
+	c# 2
+	a# 1
+	g 1
+	e 1
+	g 1
+	a# 1
+	c# 2
+	e 2
+	g 2
+	a# 2
+	c# 3
+	e 3
+	c# 3
+	a# 2
+	g 2
+	e 2
+	c# 2
+	a# 1
+	g 1
+	blockend
+;	e 1		; "feature" to help slide end
+
+block_1
+	instr 1
+	dur 2
+	e 1
+	h 1
+	f 2
+	dur 4
+	e 2
+	dur 2
+	e 1
+	h 1
+	e 2
+	e 1
+	h 1
+	dur 4
+	f 2
+	dur 2
+	e 2
+	e 1
+	h 1
+	e 2
+	e 1
+	h 1
+	f 2
+	dur 4
+	e 2
+	dur 2
+	e 1
+	h 1
+	e 2
+	e 1
+	h 1
+	dur 4
+	f 2
+	dur 2
+	e 2
+	e 1
+	h 1
+	e 2
+	blockend
+
+; 36874-2
+block_2
+	instr 1
+	dur 2
+	e 1
+	h 1
+	f 2
+	dur 4
+	e 2
+	dur 2
+	e 1
+	h 1
+	e 2
+	e 1
+	h 1
+	dur 4
+	f 2
+	dur 2
+	e 2
+	e 1
+	h 1
+	e 2
+	a 1
+	e 2
+	h 2
+	dur 4
+	e 2
+	dur 2
+	e 1
+	h 1
+	e 2
+	h 1
+	f# 2
+	dur 4
+	c 3
+	h 1
+	h 2
+	dur 2
+	e 1
+	h 1
+	f 2
+	dur 4
+	e 2
+	dur 2
+	e 1
+	h 1
+	e 2
+	e 1
+	h 1
+	dur 4
+	f 2
+	dur 2
+	e 2
+	e 1
+	h 1
+	e 2
+	a 1
+	e 2
+	h 2
+	dur 4
+	e 2
+	dur 2
+	e 1
+	h 1
+	e 2
+	a 1
+	f# 2
+	h 1
+	f# 2
+	e 1
+	h 1
+	e 2
+	h 1
+	a 1
+	e 2
+	h 2
+	dur 4
+	a 2
+	dur 2
+	a 1
+	e 2
+	a 2
+	e 1
+	h 1
+	dur 4
+	f 2
+	dur 2
+	e 2
+	e 1
+	h 1
+	e 2
+	f 1
+	c 2
+	g 2
+	dur 4
+	f 2
+	dur 2
+	c 2
+	g 2
+	f 1
+	h 1
+	d# 2
+	f# 2
+	g# 2
+	a 2
+	g# 2
+	f# 2
+	d# 2
+	e 1
+	h 1
+	f 2
+	dur 4
+	e 2
+	dur 2
+	e 1
+	h 1
+	e 2
+	e 1
+	h 1
+	dur 4
+	f 2
+	dur 2
+	e 2
+	e 1
+	h 1
+	e 2
+	a 1
+	e 2
+	h 2
+	dur 4
+	e 2
+	dur 2
+	e 1
+	h 1
+	e 2
+	a 1
+	f# 2
+	h 1
+	f# 2
+	e 1
+	h 1
+	dur 4
+	e 2
+	blockend
+
+; 36875-1
+block_3
+	instr 1
+	dur 8
+	e 2
+	d# 2
+	d 2
+	c# 2
+	c 2
+	h 1
+	a 1
+	dur 4
+	g 1
+	f# 1
+	blockend
+
+; 36875-2
+block_4
+	instr 1
+	dur 2
+	quiet
+	dur 1
+	g# 2
+	a 2
+	dur 2
+	h 2
+	dur 4
+	g# 2
+	dur 8
+	quiet
+	dur 1
+	g# 2
+	a 2
+	dur 2
+	h 2
+	a 2
+	dur 8
+	g# 2
+	dur 2
+	quiet
+	a 2
+	g 2
+	f# 2
+	h 2
+	quiet
+	e 2
+	quiet
+	quiet
+	dur 2
+	h 2
+	dur 4
+	a 2
+	dur 2
+	d# 2
+	quiet
+	d# 2
+	quiet
+	quiet
+	dur 1
+	g# 2
+	a 2
+	dur 2
+	h 2
+	dur 4
+	g# 2
+	dur 8
+	quiet
+	dur 1
+	g# 2
+	a 2
+	dur 2
+	h 2
+	a 2
+	dur 8
+	g# 2
+	dur 2
+	quiet
+	a 2
+	g 2
+	f# 2
+	h 2
+	quiet
+	e 2
+	quiet
+	quiet
+	c 3
+	a 2
+	h 2
+	g# 2
+	dur 1
+	h 2
+	a 2
+	dur 4
+	g# 2
+	dur 2
+	quiet
+	dur 1
+	c 3
+	d 3
+	e 3
+	d 3
+	c 3
+	dur 3
+	e 3
+	dur 1
+	d 3
+	quiet
+	c 3
+	quiet
+	dur 2
+	a 2
+	quiet
+	dur 1
+	h 2
+	c 3
+	d 3
+	c 3
+	h 2
+	dur 3
+	d 3
+	dur 1
+	g# 2
+	quiet
+	a 2
+	quiet
+	h 2
+	quiet
+	c 3
+	quiet
+	c 3
+	quiet
+	c 3
+	quiet
+	dur 2
+	c 3
+	c 3
+	a 2
+	f 2
+	a 2
+	f# 2
+	dur 1
+	h 1
+	c# 2
+	d# 2
+	dur 2
+	e 2
+	dur 1
+	f 2
+	dur 8
+	f# 2
+	dur 2
+	quiet
+	dur 1
+	g# 2
+	a 2
+	dur 2
+	h 2
+	dur 4
+	g# 2
+	dur 8
+	quiet
+	dur 1
+	g# 2
+	a 2
+	dur 2
+	h 2
+	a 2
+	dur 8
+	g# 2
+	dur 2
+	quiet
+	a 2
+	g 2
+	f# 2
+	h 2
+	quiet
+	e 2
+	quiet
+	quiet
+	c 3
+	a 2
+	h 2
+	g# 2
+	quiet
+	g# 2
+	quiet
+	blockend
+
+; 36876-1
+block_5
+	instr 1
+	dur 8
+	g 2
+	f# 2
+	f 2
+	e 2
+	d# 2
+	d 2
+	c 2
+	dur 4
+	h 1
+	d# 2
+	dur 2
+	e 2
+	dur 14
+	quiet
+	dur 16
+	quiet
+	quiet
+	quiet
+	blockend
+
+; 36876-2
+block_6
+	instr 1
+	dur 1
+	h 2
+	a 2
+	h 2
+	a 2
+	dur 2
+	g# 2
+	dur 4
+	e 2
+	dur 1
+	h 2
+	a 2
+	g# 2
+	f# 2
+	g# 2
+	a 2
+	h 2
+	a 2
+	h 2
+	c 3
+	d 3
+	c 3
+	d 3
+	c 3
+	dur 8
+	h 2
+	dur 2
+	c 3
+	h 2
+	a# 2
+	a 2
+	dur 1
+	g 2
+	f# 2
+	e 2
+	f# 2
+	dur 2
+	g 2
+	e 2
+	dur 1
+	g 2
+	f# 2
+	e 2
+	f# 2
+	dur 2
+	g 2
+	e 2
+	h 2
+	quiet
+	h 2
+	quiet
+	dur 1
+	h 2
+	a 2
+	h 2
+	a 2
+	dur 2
+	g# 2
+	dur 4
+	e 2
+	dur 1
+	h 2
+	a 2
+	g# 2
+	f# 2
+	g# 2
+	a 2
+	h 2
+	a 2
+	h 2
+	c 3
+	d 3
+	c 3
+	d 3
+	c 3
+	dur 8
+	h 2
+	dur 2
+	c 3
+	h 2
+	a# 2
+	a 2
+	dur 1
+	g 2
+	f# 2
+	e 2
+	f# 2
+	dur 2
+	g 2
+	e 2
+	dur 1
+	g 2
+	f# 2
+	e 2
+	g 2
+	f# 2
+	e 2
+	d# 2
+	f# 2
+	dur 2
+	e 2
+	g# 2
+	a 2
+	h 2
+	dur 1
+	c 3
+	quiet
+	c 3
+	quiet
+	c 3
+	quiet
+	c 3
+	quiet
+	dur 2
+	c 3
+	dur 1
+	d 3
+	e 3
+	d 3
+	quiet
+	dur 2
+	c 3
+	h 2
+	dur 1
+	quiet
+	h 2
+	h 2
+	a 2
+	g# 2
+	a 2
+	dur 6
+	h 2
+	dur 2
+	g# 2
+	dur 1
+	a 2
+	quiet
+	a 2
+	quiet
+	a 2
+	quiet
+	dur 4
+	a 2
+	dur 2
+	g 2
+	f 2
+	a 2
+	dur 9
+	h 2
+	dur 1
+	h 1
+	c# 2
+	d# 2
+	e 2
+	f# 2
+	g# 2
+	a 2
+	h 2
+	a 2
+	h 2
+	a 2
+	dur 2
+	g# 2
+	dur 4
+	e 2
+	dur 1
+	h 2
+	a 2
+	g# 2
+	f# 2
+	g# 2
+	a 2
+	h 2
+	a 2
+	h 2
+	c 3
+	d 3
+	c 3
+	d 3
+	c 3
+	dur 8
+	h 2
+	dur 2
+	c 3
+	h 2
+	a# 2
+	a 2
+	dur 1
+	g 2
+	f# 2
+	e 2
+	f# 2
+	dur 2
+	g 2
+	e 2
+	dur 1
+	g 2
+	f# 2
+	e 2
+	g 2
+	f# 2
+	e 2
+	d# 2
+	f# 2
+	dur 2
+	e 2
+	quiet
+	e 2
+	quiet
+	blockend
+
+; 36877-1
+block_7
+	instr 3
+	dur 12
+	quiet
+	quiet
+	quiet
+	quiet
+	quiet
+	quiet
+	quiet
+	quiet
+	dur 1
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	hh
+	sd
+	sd
+	sd
+	sd
+	quiet
+	sd
+	quiet
+	blockend
+
+; 36877-2
+block_8
+	instr 3
+	dur 1
+	bd
+	quiet
+	hh
+	hh
+	sd
+	quiet
+	bd
+	quiet
+	hh
+	hh
+	bd
+	quiet
+	sd
+	quiet
+	hh
+	quiet
+	bd
+	quiet
+	hh
+	hh
+	sd
+	quiet
+	bd
+	quiet
+	hh
+	hh
+	sd
+	quiet
+	hh
+	hh
+	sd
+	quiet
+	bd
+	quiet
+	hh
+	hh
+	sd
+	quiet
+	bd
+	quiet
+	hh
+	hh
+	bd
+	quiet
+	sd
+	quiet
+	hh
+	hh
+	bd
+	quiet
+	hh
+	hh
+	sd
+	quiet
+	hh
+	hh
+	sd
+	hh
+	bd
+	hh
+	sd
+	quiet
+	hh
+	quiet
+	blockend
+

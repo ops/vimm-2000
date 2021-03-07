@@ -1,0 +1,16 @@
+all: shekki.p shekki.n
+
+shekki.p: shekki.pal
+	pucrunch -c20 shekki.pal shekki.p
+
+shekki.n: shekki.ntsc
+	pucrunch -c20 shekki.ntsc shekki.n
+
+
+shekki.pal: shekki.asm topline.bin 32charfont.bin
+	dasm shekki.asm -oshekki.pal -v3 -lshekki.pal.lst -MSYSTEM=PAL
+
+shekki.ntsc: shekki.asm topline.bin 32charfont.bin
+	dasm shekki.asm -oshekki.ntsc -v3 -lshekki.ntsc.lst -MSYSTEM=NTSC
+
+

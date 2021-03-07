@@ -1,0 +1,15 @@
+all: copper.p copper.n
+
+copper.p: copper.pal
+	pucrunch -c20 copper.pal copper.p
+
+copper.n: copper.ntsc
+	pucrunch -c20 copper.ntsc copper.n
+
+copper.pal: copper.a chars.bin pulogo.font
+	dasm copper.a -ocopper.pal -v3 -lcopper.pal.lst -MSYSTEM=PAL
+
+copper.ntsc: copper.a chars.bin pulogo.font
+	dasm copper.a -ocopper.ntsc -v3 -lcopper.ntsc.lst -MSYSTEM=NTSC
+
+

@@ -1,0 +1,612 @@
+;	*** Here starts the music data ***
+
+;	First some macros one might want to define individually for each
+;	song. The noise channel can use pre-defined bd, sd, hh drums.
+
+        mac dur                         ;set tone duration (1-128)
+        .byte dur_code+({1}*6)-1
+        endm
+
+;	VIC's scale isn't too well tempered, and together with the fixed
+;	note table in ACplay (might be improved), we better transpose
+;	this song downwards (and transpose block only works upwards :-)
+
+;	-1 = good
+
+        mac c		
+        .byte -4+({1}-1)*12
+        endm
+        mac c#
+        .byte -3+({1}-1)*12
+        endm
+        mac d
+        .byte -2+({1}-1)*12
+        endm
+        mac d#
+        .byte -1+({1}-1)*12
+        endm
+        mac e
+        .byte 0+({1}-1)*12
+        endm
+        mac f
+        .byte 1+({1}-1)*12
+        endm
+        mac f#
+        .byte 2+({1}-1)*12
+        endm
+        mac g
+        .byte 3+({1}-1)*12
+        endm
+        mac g#
+        .byte 4+({1}-1)*12
+        endm
+        mac a
+        .byte 5+({1}-1)*12
+        endm
+        mac a#
+        .byte 6+({1}-1)*12
+        endm
+        mac h
+        .byte 7+({1}-1)*12
+        endm
+        
+instruments:	.byte	1	; number of instruments (dummy)
+
+;	vib = $xy, x=ABCD, y=EFGH in %ABCDEFGH
+;		ABC= not used, D=slide on/off
+;		EF = vib depth (00=none, 01= +-1 steps, 10= +-0.5 steps)
+;		GH = vib speed (00=fast, 01=medium, 10=slow, 11=slowest)
+;
+;	arp = $xy, x=first ch.note, y=second ch.note
+;	prt = $xx, number of "cycles" of silence between notes
+;	trp = $xx, transpose in halftones, added to block transpose
+
+;	       vib arp prt trp
+instr1:	.byte $00,$00,$00,$00  ; regular legato instrument
+	.byte $10,$00,$00,$00	; slide
+	.byte %00001001,$00,$00,$00	; vibrato
+	.byte $00,$00,$02,$00	; staccato (bass, midrange)
+
+; Max 64 entries per track!
+
+tracks:         .word   ch_0_track
+                .word   ch_1_track
+                .word   ch_2_track
+                .word   ch_3_track
+
+blocks:	        .word   block_0		; quiet  block
+		.word	block_1
+		.word	block_2
+		.word	block_3
+		.word	block_4
+		.word	block_5
+		.word	block_6
+		.word	block_7
+		.word	block_8
+		.word	block_9
+
+ch_0_track                              ;bass c#1-e4
+	block	7
+	transpose 5
+	block	8
+	transpose 3
+	block	8
+	transpose 1
+	block	8
+	transpose 0
+	block	8
+	jump	1
+        
+ch_1_track                              ;mid c#2-e5
+	block	1
+	block	1
+	block	2
+	block	2
+	block	3
+	block	3
+	block	4
+	block	4
+	jump 	0
+
+ch_2_track                              ;treble c#3-e6
+	block	1
+	block	1
+	block	2
+	block	2
+	block	3
+	block	3
+	block	4
+	block	4
+	transpose 12
+	block	5
+	block	6
+	jump	10
+
+ch_3_track                              ;noise c#4-e7
+	block	9
+	block	0
+ 	jump	1
+
+block_0					;quiet block
+	instr 4
+	dur 1
+	bd
+	quiet
+	hh
+	hh
+	sd
+	quiet
+	hh
+	bd
+	quiet
+	sd
+	hh
+	hh
+	sd
+	quiet
+	hh
+	quiet
+	hh
+	bd
+	hh
+	hh
+	sd
+	quiet
+	hh
+	bd
+	quiet
+	sd
+	hh
+	hh
+	sd
+	quiet
+	hh
+	hh
+	blockend
+
+block_1		; 36875
+	instr 1
+	dur 1	
+	a 1  
+	e 2  
+	h 2  
+	a 1  
+	e 2  
+	h 2  
+	a 1  
+	e 2  
+	a 1  
+	e 2  
+	a 2  
+	a 1  
+	e 2  
+	a 2  
+	a 1  
+	e 2  
+	blockend
+
+block_2
+	g 1  
+	d 2  
+	a 2  
+	g 1  
+	d 2  
+	a 2  
+	g 1  
+	d 2  
+	g 1  
+	d 2  
+	g 2  
+	g 1  
+	d 2  
+	g 2  
+	g 1  
+	d 2  
+	blockend
+
+block_3
+	f 1  
+	c 2  
+	g 2  
+	f 1  
+	c 2  
+	g 2  
+	f 1  
+	c 2  
+	f 1  
+	c 2  
+	f 2  
+	f 1  
+	c 2  
+	f 2  
+	f 1  
+	c 2  
+	blockend
+
+block_4
+	e 1  
+	h 1  
+	a 2  
+	e 1  
+	h 1  
+	g# 2  
+	e 1  
+	h 1  
+	f# 2  
+	e 1  
+	h 1  
+	g# 2  
+	e 1  
+	h 1  
+	e 2  
+	h 1  
+	blockend
+
+;	36876          
+block_5
+	dur 6		          
+	quiet           
+	instr 2
+	dur 2
+	e 2  
+	instr 3
+	dur 4
+	h 2 
+	dur 10
+	a 2        
+        instr 1
+	dur 1
+	h 2  
+	quiet
+	dur 2 
+	h 2    
+	a 2    
+	e 2    
+	c 2    
+	instr 3
+        dur 12
+	d 2  
+	d 2            
+	dur 3	
+	f 2      
+	e 2      
+	instr 1
+	dur 2
+	d 2    
+        dur 1  
+	c 2  
+	d 2  
+	c 2  
+	h 1  
+	dur 2
+	a 1    
+	dur 1
+	c 2  
+	d 2  
+	c 2  
+	h 1  
+	instr 3
+	dur 11	 
+	a 1
+	dur 3
+	e 2      
+	dur 4
+	d 2        
+	c 2        
+	dur 3          
+	h 1      
+	c 2      
+	d 2      
+	e 2      
+	instr 1
+	dur 2
+	f 2    
+	e 2    
+        f 2    
+	e 2    
+	d 2    
+	c 2    
+	h 1    
+	a 1    
+	g# 1    
+	e 1    
+	blockend
+
+block_6 
+	instr 1
+	dur 1         
+	a 1  
+	quiet 
+	e 1  
+	quiet 
+	a 1  
+	quiet 
+	e 1  
+	quiet 
+	a 1  
+	e 1  
+	a 1  
+	h 1  
+	c 2  
+	quiet
+	dur 4 
+	a 1     
+	dur 1
+	h 1  
+	quiet 
+	c 2  
+	quiet 
+	d 2  
+	quiet 
+	e 2  
+	quiet 
+	a 2  
+	quiet 
+	e 2  
+	c 2  
+	a 1  
+	c 2  
+        instr 3
+	dur 3  
+	d 2
+	c 2      
+	h 1      
+	a 1      
+	instr 1
+	dur 1
+	h 1  
+	a 1  
+	h 1
+	instr 3
+	dur 3  
+	g 1      
+	instr 1
+	dur 2
+	a 1    
+	h 1    
+	g 1    
+	d 2    
+	c 2    
+	h 1    
+	g 1    
+        dur 1  
+	f 1  
+	a 1  
+	c 2  
+	f 2  
+	a 2  
+	quiet
+	dur 2 
+	f 2    
+	dur 1
+	a# 2  
+	a 2  
+	g 2  
+	f 2  
+	a 2  
+	quiet
+	instr 3
+	dur 4 
+	f 2
+	instr 1
+	dur 2
+	a 2    
+	g 2    
+	f 2    
+	dur 1
+	a 2  
+	g 2  
+	f 2  
+	e 2  
+	d 2  
+	c 2  
+	a# 1  
+	a 1  
+        g# 1  
+	a 1  
+	h 1  
+	a 1  
+	g# 1  
+	quiet 
+	dur 2
+	e 1    
+	dur 1
+	g# 1  
+	a 1  
+	h 1  
+	c 2  
+	d 2  
+	quiet
+	dur 2 
+	h 1    
+        dur 1  
+	d 2  
+	e 2  
+	f 2  
+	e 2  
+	d 2  
+	e 2  
+	d 2  
+	c 2  
+	h 1  
+	c 2  
+	h 1  
+	a 1  
+	h 1  
+	a 1  
+	g# 1  
+	e 1  
+	instr 2
+	dur 3
+	a 1  
+	instr 1
+	e 2
+	instr 3
+	dur 4
+	a 2
+	instr 1
+	dur 2
+	g# 2    
+	a 2    
+	e 2    
+        c 2    
+	e 2    
+	a 1    
+	c 2    
+	e 1    
+	a 1    
+	c 2    
+	e 2    
+        dur 1  
+	d 2  
+	e 2  
+	d 2  
+	c 2  
+	dur 2
+	h 1    
+	dur 3
+	g 1      
+	dur 1
+	f 1  
+	g 1  
+	a 1  
+	dur 2
+	f 1    
+	dur 3
+	g 1     
+	dur 1
+	h 1  
+	c 2  
+	d 2  
+	dur 2
+	a 1    
+	dur 3
+	h 1      
+	dur 1
+	d 2  
+	e 2  
+	f 2  
+	dur 2
+	d 2    
+	e 2    
+	dur 1          
+	f 2  
+	c 2  
+	quiet 
+	a 2  
+	f 2  
+	quiet 
+	f 2  
+	c 2  
+	quiet 
+	a 2  
+	f 2  
+	quiet 
+	a 2  
+	f 2  
+	a 2  
+	f 2  
+        f 2  
+	c 2  
+	quiet 
+	a 2  
+	f 2  
+	quiet 
+	f 2  
+	c 2  
+	quiet 
+	a 2  
+	f 2  
+	quiet 
+	a 2  
+	f 2  
+	a 2  
+	f 2  
+	g# 2  
+	e 2  
+	quiet 
+	h 2  
+	g# 2  
+	quiet 
+	e 2  
+	d 2  
+	quiet 
+	e 2  
+	h 1  
+	quiet 
+	c 2  
+	h 1  
+	c 2  
+	a 1  
+	h 1  
+	g# 1  
+	quiet 
+	d 2  
+	c 2  
+	quiet 
+	c 2  
+	h 1  
+	quiet 
+	h 1  
+	a 1  
+	quiet 
+	h 1  
+	a 1  
+	h 1  
+	e 1
+	blockend
+
+block_7			; 36874 
+	dur 14
+	quiet
+	quiet
+	quiet
+	quiet
+	quiet
+	quiet
+	quiet
+	quiet
+	dur 11
+	quiet
+	instr 2
+	dur 5		; this is a vulnerablity - blockend will prevent
+	e 3  		; player from reaching the following tone, but
+	blockend	; initslide will keep looking for a tone beyond 
+	a 2		; end of block if neccessary
+
+block_8
+	instr 4
+	dur 2
+	e 1    
+	e 2    
+	e 1    
+	e 2    
+	e 1    
+	e 2    
+	e 1    
+	e 2    
+	e 1    
+	e 2    
+	e 1    
+	e 2    
+	e 1    
+	e 2    
+	e 1    
+	e 2    
+	blockend                                
+
+block_9			; 36877
+	dur 14
+	quiet
+	quiet
+	quiet
+	quiet
+	quiet
+	quiet
+	quiet
+	quiet
+	dur 8
+	quiet
+	quiet
+	blockend
+

@@ -1,0 +1,36 @@
+echo entering vimm
+cd vimm
+smake
+echo entering /vicpic
+cd /vicpic
+smake
+echo entering /techtech
+cd /techtech
+smake
+echo entering /plasma
+cd /plasma
+smake
+echo entering /copper
+cd /copper
+smake
+echo entering /shekki
+cd /shekki
+smake
+echo entering /credits
+cd /credits
+smake
+cd /
+mkdir bin
+copy clone vimm/vimm.prg bin/
+copy clone vicpic/vicpic.p vicpic/vicpic.n vicpic/vimmgfx? bin/
+copy clone techtech/tech^2.* bin/
+copy clone plasma/plasma.p plasma/plasma.n bin/
+copy clone copper/copper.p copper/copper.n bin/
+copy clone shekki/shekki.p shekki/shekki.n bin/
+copy clone credits/crediz.* bin/
+echo
+echo Ready!
+echo
+echo No copy the files from the bin directory to a disk,
+echo then load and run vimm.prg on your VIC20.
+echo 16kB expansion memory is required.

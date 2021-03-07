@@ -1,0 +1,15 @@
+
+all: plasma.p plasma.n
+
+plasma.n: plasma.ntsc
+	pucrunch -c20 plasma.ntsc plasma.n
+
+plasma.p: plasma.pal
+	pucrunch -c20 plasma.pal plasma.p
+
+plasma.ntsc: plasma.asm plasma.dat pulogo.dat
+	dasm plasma.asm -oplasma.ntsc -v3 -lplasma.ntsc.lst -MSYSTEM=NTSC
+
+plasma.pal: plasma.asm plasma.dat pulogo.dat
+	dasm plasma.asm -oplasma.pal -v3 -lplasma.pal.lst -MSYSTEM=PAL
+

@@ -1,0 +1,1082 @@
+;	*** Here starts the music data ***
+
+;	First some macros one might want to define individually for each
+;	song. The noise channel can use pre-defined bd, sd, hh drums.
+
+        mac dur                         ;set tone duration (1-128)
+        .byte dur_code+(3*{1}/4)-1
+        endm
+
+        mac c		
+        .byte {1}*12
+        endm
+        mac c#
+        .byte 1+{1}*12
+        endm
+        mac d
+        .byte 2+{1}*12
+        endm
+        mac d#
+        .byte 3+{1}*12
+        endm
+        mac e
+        .byte 4+{1}*12
+        endm
+        mac f
+        .byte 5+{1}*12
+        endm
+        mac f#
+        .byte 6+{1}*12
+        endm
+        mac g
+        .byte 7+{1}*12
+        endm
+        mac g#
+        .byte 8+{1}*12
+        endm
+        mac a
+        .byte 9+{1}*12
+        endm
+        mac a#
+        .byte 10+{1}*12
+        endm
+        mac h
+        .byte 11+{1}*12
+        endm
+        
+instruments:	.byte	1	; number of instruments (dummy)
+
+;	vib = $xy, x=ABCD, y=EFGH in %ABCDEFGH
+;		ABC= not used, D=slide on/off
+;		EF = vib depth (00=none, 01= +-1 steps, 10= +-0.5 steps)
+;		GH = vib speed (00=fast, 01=medium, 10=slow, 11=slowest)
+;
+;	arp = $xy, not yet implemented
+;	prt = $xx, number of "cycles" of silence between notes
+;	trp = $xx, transpose in halftones
+
+;	       vib arp prt trp
+instr1:	.byte $00,$00,$00,$00	; default instrument
+	.byte $00,$00,$03,$00	; drums & short silence
+	.byte %00001001,$00,$00,$00	; vibrato instrument
+	.byte $00,$00,$01,$00
+
+; Max 64 entries per track!
+
+tracks:         .word   ch_0_track
+                .word   ch_1_track
+                .word   ch_2_track
+                .word   ch_3_track
+	
+blocks:	        .word   block_0		; quiet  block
+		.word	block_1
+		.word	block_2
+		.word	block_3
+		.word	block_4
+		.word	block_5
+		.word	block_6
+		.word	block_7
+		.word	block_8
+		.word	block_9
+		.word	block_10
+		.word	block_11
+		.word	block_12
+		.word	block_13
+		.word	block_14
+		.word	block_15
+		.word	block_16
+		.word	block_17
+		.word	block_18
+		.word	block_19
+		.word	block_20
+		.word	block_21
+		.word	block_22
+		.word	block_23
+		.word	block_24
+		.word	block_25
+		.word	block_26
+		.word	block_27
+		.word	block_28
+		.word	block_29
+		.word	block_30
+			
+ch_0_track                              ;bass c#1-e4
+	block	0
+	rept 2
+	block	0
+	block   1			; instrument 1
+	block   2
+	block   3
+	block   2
+	block   3
+	block   2
+	block   3
+	block   2
+	block   3
+	block   2
+	block   3
+	block   2
+	block   3
+	block   2
+	block   3
+	block   2
+	block   4
+	block	5
+	block 	6
+	block	7
+	block   2
+	block 	8
+	block	3
+	block	2
+	block   3
+	jump	8
+        
+ch_1_track                              ;mid c#2-e5
+	block	9			; instrument 1
+	rept	8
+	block	0
+	block	10			; instrument 1
+	block	10
+	block	11			; instrument 2
+	block 	12
+	block	11
+	block 	12
+	block	10			; instrument 1
+	block	10
+	rept	3
+	block	13
+	block	14
+	block	15
+	block	16
+	block	16
+	block	17			; instrument 3
+	block	11			; instrument 2
+	block	12
+	block	11
+	block	18			; instrument 3
+	jump	3
+
+ch_2_track                              ;treble c#3-e6
+	block 	19			; instrument 1
+	rept	8
+	block	0
+	block	19			; instrument 1
+	block	19
+	block	20			; instrument 2
+	block	21
+	block	20
+	block	21
+	block	19			; instrument 1
+	block	19
+	rept	4
+	block	22
+	block	23			; instrument 3
+	block	23
+	block	24
+	block	24
+	block	23
+	block	24
+	block	20			; instrument 2
+	block	21
+	block	21
+	block	25			; instrument 3
+	jump	3
+
+ch_3_track                              ;noise c#4-e7
+	block	0
+	rept	3
+        block   0
+	block	26			; instrument 2
+	block	26
+	rept	11
+	block	27
+	block	28
+	rept	4
+	block	27
+	block	29
+	rept	3
+	block	27
+	rept	16
+	block	30
+	jump 	5
+
+block_0					;quiet block
+	dur 64
+	quiet
+	quiet
+        blockend
+
+block_1	
+	instr 1
+	dur 72
+	quiet
+	dur 8
+	a# 1
+    	dur 16  
+ 	g 1  
+ 	f 1  
+ 	d# 1
+	blockend  
+
+block_2
+	dur 32
+	c 1  
+	dur 24
+ 	c 2  
+	dur 16
+ 	a# 0  
+	dur 8
+	a# 1
+	dur 16  
+ 	g 0  
+ 	g 1  
+ 	a# 0  
+	dur 32   
+ 	c 1  
+	dur 40   
+ 	c 2  
+	dur 8   
+ 	g 0
+	dur 16  
+ 	g 1 
+ 	a# 1  
+ 	c 2
+ 	blockend  
+   
+block_3
+	dur 32
+ 	g# 0  
+	dur 24   
+ 	g# 1  
+   	dur 16   
+ 	a# 0  
+	dur 8   
+ 	a# 1
+	dur 16  
+ 	g 0  
+ 	a# 0  
+ 	c 1  
+	dur 72   
+ 	c 2  
+	dur 8   
+ 	a# 1
+	dur 16  
+ 	g 1  
+   	f 1  
+   	d# 1  
+	blockend
+   
+block_4
+	dur 32
+	g# 0  
+   	dur 24   
+ 	g# 1  
+   	dur 16   
+ 	a# 0  
+	dur 8   
+ 	a# 1
+	dur 16  
+ 	g 0  
+ 	a# 0  
+ 	c 1  
+	dur 72   
+ 	c 2  
+	dur 8
+ 	c 1  
+	dur 16
+ 	c 2  
+ 	c 1  
+ 	d 1  
+	blockend
+   
+block_5
+	dur 32
+ 	d# 1  
+	dur 48   
+ 	d# 2  
+	dur 32   
+ 	d# 1  
+	dur 16   
+ 	d# 2  
+	dur 32   
+ 	c 1  
+ 	dur 48   
+ 	c 2  
+	dur 32   
+ 	c 2  
+	dur 16   
+ 	c 2  
+   	dur 32
+	c# 1  
+	dur 48
+ 	c# 2  
+	dur 32
+ 	c# 2  
+	dur 16   
+ 	c# 2  
+	dur 32   
+ 	a# 0  
+	dur 48   
+ 	a# 1  
+	dur 32
+ 	a# 1  
+ 	dur 16  
+ 	a# 1  
+	blockend
+   
+block_6
+	dur 24
+ 	d# 1  
+	dur 8   
+	d# 2
+	dur 64  
+ 	d# 2  
+	dur 32   
+ 	d# 1  
+	dur 24
+ 	c 1  
+ 	dur 8
+ 	c 2  
+	dur 64
+	c 2  
+   	dur 32
+ 	c 1  
+   	dur 24  
+ 	c# 1  
+   	dur 8
+ 	c# 2  
+	dur 64
+ 	c# 2  
+	dur 32
+ 	c# 2  
+   	dur 24
+ 	a# 0  
+   	dur 8
+ 	a# 1  
+	dur 64
+ 	a# 1  
+   	dur 32
+ 	a# 0  
+	blockend
+
+block_7
+	dur 24
+ 	g 0  
+   	dur 8   
+ 	g 1 
+	dur 64 
+ 	g 1  
+   	dur 32
+ 	g 0  
+   	dur 24
+ 	g# 0  
+   	dur 8
+ 	g# 1
+	dur 64
+ 	g# 1  
+ 	dur 32
+ 	g# 0 
+	blockend 
+
+block_8
+	dur 32
+ 	g# 0  
+   	dur 24   
+ 	g# 1  
+   	dur 16   
+ 	a# 0  
+	dur 8   
+ 	a# 1
+	dur 16  
+ 	g 0  
+   	a# 0  
+   	c 1  
+   	dur 72
+ 	c 2  
+	dur 8   
+ 	g 0 
+	dur 16 
+ 	g 1  
+   	a# 1  
+   	c 2  
+	blockend
+   
+block_9
+	instr 1
+	dur 16
+ 	c 1  
+   	quiet 
+ 	c 1  
+	dur 8   
+ 	d# 1
+	dur 16  
+ 	c 1  
+	dur 8   
+ 	c 1 
+	dur 16 
+ 	f 1  
+ 	c 1  
+ 	a# 0  
+   	quiet 
+ 	c 1  
+ 	c 1  
+	dur 8   
+ 	g 1 
+	dur 16 
+ 	c 1  
+	dur 8   
+ 	c 1  
+ 	g# 1  
+ 	c 1  
+ 	g 1  
+ 	c 1  
+ 	d# 1  
+ 	c 1 
+	dur 16 
+ 	g# 0  
+ 	quiet 
+ 	g# 1  
+	dur 8   
+ 	c 1 
+	dur 16 
+ 	a# 0  
+	dur 8   
+ 	a# 0
+	dur 16  
+ 	g 0  
+	d 1  
+ 	c 1  
+ 	c 1  
+ 	quiet 
+	dur 32   
+	c 1  
+	dur 64   
+ 	quiet  
+	blockend
+
+block_10
+	instr 1
+	dur 16
+ 	quiet   
+ 	c 1  
+ 	d# 1  
+ 	d# 1  
+	dur 8   
+ 	d# 1
+	dur 16  
+	c 1  
+	dur 8   
+ 	c 1 
+	dur 16 
+ 	f 1  
+    	c 1  
+ 	a# 0  
+ 	c 1  
+ 	c 1  
+ 	g 1  
+	dur 8   
+ 	g 1 
+	dur 16 
+	c 1  
+	dur 8   
+ 	c 1  
+ 	g# 1  
+ 	c 1  
+ 	g 1  
+ 	g 1 
+	dur 16 
+ 	d# 1  
+ 	c 1  
+	dur 8   
+ 	g 1  
+ 	c 1 
+	dur 16 
+	c 2  
+	dur 8   
+ 	c 1 
+	dur 16 
+ 	a# 0  
+	dur 8   
+	a# 0
+	dur 16  
+ 	g 0  
+ 	d 1  
+ 	c 1  
+ 	c 1  
+	dur 96   
+ 	c 1  
+	blockend
+  
+block_11
+	instr 2
+	dur 16
+ 	quiet
+ 	e 1  
+ 	e 1  
+	dur 8   
+ 	e 1 
+	dur 16 
+	f 1  
+	dur 8   
+ 	f 1 
+	dur 16 
+ 	f 1  
+ 	f 1  
+ 	f 1  
+ 	f 1  
+ 	e 1  
+ 	e 1  
+	dur 8   
+ 	e 1 
+	dur 16 
+ 	f 1  
+	dur 8   
+ 	d 1 
+	dur 16 
+ 	c 1  
+ 	e 1  
+ 	g 0  
+	blockend
+
+block_12
+	dur 16
+ 	quiet 
+ 	c 1  
+ 	c 1  
+ 	c 1  
+	dur 8   
+ 	c 1 
+	dur 16 
+ 	d 1  
+ 	d 1  
+ 	d 1  
+	dur 8   
+ 	d 1 
+	dur 16 
+ 	d 1  
+ 	e 1  
+ 	e 1  
+ 	e 1  
+	dur 8   
+ 	d 1 
+	dur 16 
+	e 1  
+ 	e 1  
+        dur 24
+ 	e 1  
+	blockend   
+
+block_13
+	instr 1
+	dur 16
+ 	d# 1  
+	dur 8   
+ 	d# 1
+	dur 16  
+ 	a# 0  
+	dur 8   
+ 	a# 0
+	dur 16  
+ 	d# 1  
+	dur 8   
+ 	d# 1
+	dur 16  
+ 	a# 0  
+	dur 8   
+ 	a# 0  
+ 	d# 1  
+ 	d# 1  
+ 	a# 0  
+ 	a# 0
+	blockend  
+
+block_14
+	instr 1
+	dur 16
+ 	d# 1  
+	dur 8   
+ 	d# 1
+	dur 16  
+ 	a# 0  
+	dur 8   
+ 	a# 0
+	dur 16  
+ 	d# 1  
+	dur 8   
+ 	d# 1
+	dur 16  
+ 	a# 0  
+	dur 8   
+ 	a# 0  
+ 	d# 1  
+ 	d# 1  
+ 	a# 0  
+ 	d# 1
+	blockend  
+
+block_15
+	instr 1
+	dur 16
+ 	d# 1  
+	dur 8   
+ 	a# 1  
+ 	g 1  
+ 	f 1 
+	dur 16 
+ 	d# 1  
+ 	f 1  
+	dur 8   
+ 	g 1 
+	dur 16 
+ 	a# 1  
+ 	g 1  
+ 	f 1  
+ 	d# 1  
+	dur 8   
+ 	a# 1  
+ 	g 1  
+ 	f 1 
+	dur 16 
+ 	d# 1  
+ 	d# 1  
+	dur 8   
+ 	g 1 
+	dur 16 
+ 	a# 1  
+ 	g 1  
+ 	f 1  
+ 	blockend
+
+block_16
+	instr 1
+	dur 16
+ 	d# 1  
+	dur 8   
+ 	a# 1  
+ 	g# 1  
+ 	f 1 
+	dur 16 
+ 	d# 1  
+	f 1
+	dur 8   
+ 	g# 1
+	dur 16  
+	a# 1  
+ 	g# 1  
+ 	f 1  
+	blockend   
+
+block_17
+	instr 3
+	dur 24
+ 	d# 2  
+ 	a# 1  
+ 	d# 2  
+ 	a# 1  
+	dur 16   
+ 	d# 2  
+ 	a# 1  
+	dur 24   
+ 	d# 2  
+ 	a# 1  
+ 	d# 2  
+ 	a# 1  
+	dur 8   
+ 	d# 2  
+ 	d# 2
+	dur 16  
+	a# 1
+	blockend
+   
+block_18
+	instr 3
+	dur 16
+	quiet
+ 	c 2  
+	dur 32   
+ 	c 2  
+	dur 16   
+ 	a# 1  
+	dur 48   
+ 	a# 1  
+	dur 16   
+ 	g 1  
+	dur 48   
+ 	g 1  
+	dur 16   
+ 	f 1  
+	dur 32   
+ 	f 1  
+ 	d# 1  
+	dur 112
+ 	c 1
+	dur 64
+	quiet 
+	quiet 
+   	blockend
+
+block_19
+	instr 1
+	dur 32
+ 	c 1
+	dur 24   
+ 	d# 1  
+	dur 16   
+ 	c 1  
+	dur 8   
+ 	c 1 
+	dur 16 
+ 	f 1  
+ 	c 1  
+ 	a# 0  
+	dur 32   
+ 	c 1  
+	dur 24   
+ 	g 1  
+	dur 16   
+ 	c 1  
+	dur 8   
+ 	c 1 
+	dur 16 
+ 	g# 1  
+ 	g 1  
+ 	d# 1  
+ 	c 1  
+ 	g 1  
+ 	c 2  
+	dur 8   
+ 	c 1 
+	dur 16 
+ 	a# 0  
+	dur 8   
+ 	a# 0
+	dur 16  
+ 	g 0  
+    	d 1  
+ 	c 1  
+ 	dur 64   
+ 	c 1  
+ 	dur 64
+ 	quiet  
+	blockend   
+   
+block_20
+	instr 2
+	dur 16
+ 	quiet  
+ 	g 1  
+ 	g 1  
+	dur 8   
+ 	g 1 
+	dur 16 
+ 	a# 1  
+	dur 8   
+ 	a# 1
+	dur 16  
+ 	a# 1  
+ 	a 1  
+ 	a 1  
+ 	a 1  
+ 	g 1  
+ 	g 1  
+	dur 8   
+ 	g 1 
+	dur 16 
+ 	a# 1  
+	dur 8   
+ 	a# 1
+	dur 16  
+ 	a 1  
+ 	g 1  
+ 	e 1  
+	blockend   
+
+block_21
+	dur 16
+ 	quiet 
+ 	d# 1  
+ 	d# 1  
+ 	d# 1  
+	dur 8   
+ 	d# 1
+	dur 16  
+ 	f 1  
+ 	f 1  
+ 	f 1  
+	dur 8   
+ 	f 1 
+	dur 16 
+ 	f 1  
+ 	g 1  
+ 	g 1  
+ 	g 1  
+	dur 8   
+ 	f 1 
+	dur 16 
+ 	g 1  
+ 	g 1
+	dur 24  
+ 	g 1  
+   	blockend
+ 
+block_22
+	dur 16
+ 	d# 2  
+	dur 8   
+ 	d# 1
+	dur 16  
+ 	a# 0  
+	dur 8   
+ 	a# 1
+	dur 16  
+ 	d# 2  
+	dur 8   
+ 	d# 1
+	dur 16  
+	a# 0  
+	dur 8   
+ 	a# 1  
+ 	d# 2  
+ 	d# 1  
+ 	a# 0  
+ 	a# 1
+	blockend  
+
+block_23
+	instr 3
+	dur 8
+ 	a# 1  
+ 	g 1  
+ 	f 1 
+	dur 16 
+ 	d# 1  
+ 	f 1  
+	dur 8   
+ 	g 1 
+	dur 16 
+ 	a# 1  
+ 	g 1  
+ 	f 1  
+ 	d# 1  
+	blockend  
+
+block_24
+	dur 8
+ 	a# 1  
+ 	g# 1  
+ 	f 1  
+	dur 16
+ 	d# 1  
+ 	f 1  
+	dur 8   
+ 	g# 1
+	dur 16  
+ 	a# 1  
+ 	g# 1  
+ 	f 1  
+ 	d# 1  
+   	blockend
+
+block_25
+	instr 3
+	dur 48
+ 	c 2  
+	dur 64   
+ 	a# 1  
+ 	g 1  
+	dur 48   
+ 	f 1  
+	dur 32   
+ 	d# 1  
+	dur 64
+ 	c 1  
+	c 1
+   	quiet
+	quiet
+	blockend   
+
+block_26
+	instr 2
+	dur 8
+  	bd
+  	hh
+	hh 
+  	hh 
+  	hh 
+  	hh 
+  	hh 
+  	bd 
+  	hh 
+  	bd 
+  	bd 
+  	hh 
+  	hh 
+  	hh 
+  	bd 
+  	hh 
+  	bd 
+  	hh 
+  	hh 
+  	hh 
+  	hh 
+  	hh 
+  	hh 
+  	hh 
+  	hh 
+  	sd
+	sd
+	hh
+	sd
+	hh
+	sd
+  	hh 
+  	hh 
+  	hh 
+  	hh 
+  	hh 
+  	hh 
+	hh
+	hh
+  	bd 
+  	hh 
+  	bd 
+  	bd 
+  	hh 
+  	hh 
+  	hh 
+  	bd 
+  	hh 
+  	bd 
+  	hh 
+  	hh 
+  	hh 
+  	hh 
+  	hh 
+  	hh 
+  	hh 
+  	hh 
+  	sd 
+  	sd 
+  	hh 
+  	sd 
+  	hh
+  	sd 
+  	hh
+	blockend 
+
+block_27
+	dur 8
+  	bd 
+  	hh   
+  	hh 
+  	hh
+  	sd 
+    	quiet
+  	hh 
+  	bd 
+  	hh 
+  	bd 
+  	bd 
+  	hh 
+  	sd 
+  	quiet  
+  	bd 
+  	hh 
+  	bd 
+  	hh 
+  	hh 
+  	hh
+  	sd 
+  	quiet  
+  	hh 
+  	hh
+  	hh 
+  	bd 
+  	bd 
+  	hh 
+  	sd 
+  	quiet  
+  	bd 
+  	hh 
+	blockend
+
+block_28
+	dur 8
+  	bd 
+  	hh 
+  	hh 
+  	hh
+  	sd 
+  	quiet  
+  	hh 
+  	bd 
+  	hh 
+  	bd 
+  	bd 
+  	hh 
+  	sd 
+  	quiet  
+  	bd 
+  	hh 
+  	bd 
+  	hh 
+  	hh 
+  	hh
+  	sd 
+  	quiet  
+  	hh 
+  	hh 
+  	hh 
+  	bd 
+  	sd 
+  	quiet  
+  	sd 
+  	quiet  
+  	sd 
+  	sd 
+	blockend
+
+block_29
+	dur 8
+  	bd 
+  	hh 
+  	hh 
+  	hh 
+  	sd 
+  	quiet  
+  	hh 
+  	bd 
+  	hh 
+  	bd 
+  	bd 
+  	hh 
+  	sd 
+  	quiet  
+  	bd 
+  	hh 
+  	bd 
+  	hh 
+; sounds in first octave = tom-tom
+ 	h 1  
+  	hh 
+ 	h 1  
+ 	h 1  
+  	hh 
+  	hh 
+ 	a# 1  
+  	hh 
+ 	a# 1  
+ 	a# 1  
+ 	a 1 
+ 	g# 1  
+ 	g# 1  
+ 	g# 1 
+	blockend
+
+block_30
+	dur 8
+	hh
+	hh
+	hh
+	hh
+	blockend
